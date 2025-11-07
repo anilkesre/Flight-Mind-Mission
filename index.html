@@ -422,18 +422,18 @@
    <div class="game-screen">
     <div id="welcome-screen" class="welcome-screen">
      <h2>Hoş Geldiniz!</h2>
-     <p id="welcome-message">Flight Mind 2025'e hoş geldiniz! Bugün hem pilot hem psikolog olacaksınız. Uçağımız kalkışa hazır, ancak bazı sistem kontrolleri sizden doğru cevaplar bekliyor. Her doğru yanıt bizi güvenli bir şekilde gökyüzüne taşıyacak!</p>
+     <p id="welcome-message">Flight Mind 2025'e hoş geldiniz! Bugün hem pilot hem psikolog olacaksınız. Uçağımız kalkışa hazır, ancak bazı sistem kontrolleri sizden doğru cevaplar bekliyor. Her doğru yanıt bizi emniyetli bir şekilde gökyüzüne taşıyacak!</p>
      <div class="input-group"><label for="player-name">Adınız:</label> <input type="text" id="player-name" placeholder="Adınızı girin">
      </div>
      <h3 style="color: #1e3c72; margin: 30px 0 20px 0;">Rolünüzü Seçin:</h3>
      <div class="role-selection">
       <div class="role-card" data-role="Kaptan">
        <h3>👨‍✈️ Kaptan</h3>
-       <p>Uçuşun lideri</p>
+       <p>Uçuşun sorumlusu</p>
       </div>
       <div class="role-card" data-role="First Officer">
        <h3>👩‍✈️ First Officer</h3>
-       <p>Kaptanın yardımcısı</p>
+       <p>2. Pilot</p>
       </div>
       <div class="role-card" data-role="Uçuş Psikoloğu">
        <h3>🧠 Uçuş Psikoloğu</h3>
@@ -470,7 +470,7 @@
         🛡️
        </div>
        <div class="label">
-        Güvenlik
+        Emniyet
        </div>
       </div>
       <div class="system-indicator" id="system-3">
@@ -524,7 +524,7 @@
     const defaultConfig = {
       game_title: "✈️ Flight Mind Mission",
       game_subtitle: "Zihin Uçuşu Görevi",
-      welcome_message: "Flight Mind 2025'e hoş geldiniz! Bugün hem pilot hem psikolog olacaksınız. Uçağımız kalkışa hazır, ancak bazı sistem kontrolleri sizden doğru cevaplar bekliyor. Her doğru yanıt bizi güvenli bir şekilde gökyüzüne taşıyacak!",
+      welcome_message: "Flight Mind 2025'e hoş geldiniz! Bugün hem pilot hem psikolog olacaksınız. Uçağımız kalkışa hazır, ancak bazı sistem kontrolleri sizden doğru cevaplar bekliyor. Her doğru yanıt bizi emniyetli bir şekilde gökyüzüne taşıyacak!",
       start_button: "Uçuşa Başla 🚀",
       success_message: "Gökyüzünü sadece pilotlar değil, psikolojik dayanıklılığı yüksek zihinler yönetir!",
       background_color: "#1e3c72",
@@ -792,7 +792,7 @@
       if (percentage >= 80) {
         document.getElementById('result-title').textContent = "🎉 Mükemmel İniş!";
       } else if (percentage >= 60) {
-        document.getElementById('result-title').textContent = "✈️ Güvenli İniş!";
+        document.getElementById('result-title').textContent = "✈️ Emniyetli İniş!";
       } else {
         document.getElementById('result-title').textContent = "⚠️ Zorlu İniş!";
       }
@@ -876,5 +876,5 @@
 
     initializeApp();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99af659d56a458fd',t:'MTc2MjU0NTQxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99afd75277d858fd',t:'MTc2MjU1MDA3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
