@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="tr">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Mind Mission</title>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      min-height: 100%;
+    }
+
+    .cockpit-header {
+      text-align: center;
+      padding: 30px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      margin-bottom: 30px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .cockpit-header h1 {
+      color: #ffffff;
+      font-size: 48px;
+      margin: 0 0 10px 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .cockpit-header p {
+      color: #e0e0e0;
+      font-size: 20px;
+      margin: 0;
+    }
+
+    .game-screen {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .welcome-screen {
+      text-align: center;
+    }
+
+    .welcome-screen h2 {
+      color: #1e3c72;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .welcome-screen p {
+      color: #555;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .role-selection {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 30px 0;
+    }
+
+    .role-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: 3px solid transparent;
+    }
+
+    .role-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .role-card.selected {
+      border-color: #ffd700;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    .role-card h3 {
+      margin: 0 0 10px 0;
+      font-size: 20px;
+    }
+
+    .role-card p {
+      margin: 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .input-group {
+      margin: 20px 0;
+    }
+
+    .input-group label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .flight-phase {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .phase-indicator {
+      display: inline-block;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 10px 30px;
+      border-radius: 25px;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background: #e0e0e0;
+      border-radius: 15px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+    }
+
+    .question-card {
+      background: #f8f9fa;
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+    }
+
+    .question-card h3 {
+      color: #1e3c72;
+      font-size: 24px;
+      margin: 0 0 20px 0;
+    }
+
+    .answers {
+      display: grid;
+      gap: 12px;
+    }
+
+    .answer-btn {
+      background: white;
+      border: 2px solid #ddd;
+      padding: 15px 20px;
+      border-radius: 10px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 16px;
+    }
+
+    .answer-btn:hover {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+
+    .answer-btn.correct {
+      background: #d4edda;
+      border-color: #28a745;
+    }
+
+    .answer-btn.incorrect {
+      background: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .systems-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin: 25px 0;
+    }
+
+    .system-indicator {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      border: 2px solid #ddd;
+      transition: all 0.3s;
+    }
+
+    .system-indicator.active {
+      border-color: #28a745;
+      background: #d4edda;
+    }
+
+    .system-indicator.warning {
+      border-color: #dc3545;
+      background: #f8d7da;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .system-indicator .icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .system-indicator .label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .results-screen {
+      text-align: center;
+    }
+
+    .results-screen h2 {
+      color: #1e3c72;
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+
+    .score-display {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 20px;
+      margin: 30px 0;
+    }
+
+    .score-display .score {
+      font-size: 72px;
+      font-weight: 700;
+      margin: 10px 0;
+    }
+
+    .leaderboard {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 30px;
+    }
+
+    .leaderboard h3 {
+      color: #1e3c72;
+      margin: 0 0 20px 0;
+      font-size: 24px;
+    }
+
+    .leaderboard-item {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 2px solid #e0e0e0;
+    }
+
+    .leaderboard-item .rank {
+      font-size: 24px;
+      font-weight: 700;
+      color: #667eea;
+      min-width: 40px;
+    }
+
+    .leaderboard-item .info {
+      flex: 1;
+      margin: 0 15px;
+    }
+
+    .leaderboard-item .name {
+      font-weight: 600;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .leaderboard-item .role {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .leaderboard-item .score {
+      font-size: 24px;
+      font-weight: 700;
+      color: #28a745;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 20px 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      display: none;
+      align-items: center;
+      gap: 15px;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .toast.show {
+      display: flex;
+    }
+
+    .toast.success {
+      border-left: 4px solid #28a745;
+    }
+
+    .toast.error {
+      border-left: 4px solid #dc3545;
+    }
+
+    .toast .icon {
+      font-size: 24px;
+    }
+
+    .toast .message {
+      font-size: 16px;
+      color: #333;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <div class="cockpit-header">
+    <h1 id="game-title">✈️ Flight Mind Mission</h1>
+    <p id="game-subtitle">Zihin Uçuşu Görevi</p>
+   </div>
+   <div class="game-screen">
+    <div id="welcome-screen" class="welcome-screen">
+     <h2>Hoş Geldiniz!</h2>
+     <p id="welcome-message">Flight Mind 2025'e hoş geldiniz! Bugün hem pilot hem psikolog olacaksınız. Uçağımız kalkışa hazır, ancak bazı sistem kontrolleri sizden doğru cevaplar bekliyor. Her doğru yanıt bizi güvenli bir şekilde gökyüzüne taşıyacak!</p>
+     <div class="input-group"><label for="player-name">Adınız:</label> <input type="text" id="player-name" placeholder="Adınızı girin">
+     </div>
+     <h3 style="color: #1e3c72; margin: 30px 0 20px 0;">Rolünüzü Seçin:</h3>
+     <div class="role-selection">
+      <div class="role-card" data-role="Kaptan">
+       <h3>👨‍✈️ Kaptan</h3>
+       <p>Uçuşun lideri</p>
+      </div>
+      <div class="role-card" data-role="First Officer">
+       <h3>👩‍✈️ First Officer</h3>
+       <p>Kaptanın yardımcısı</p>
+      </div>
+      <div class="role-card" data-role="Uçuş Psikoloğu">
+       <h3>🧠 Uçuş Psikoloğu</h3>
+       <p>Zihinsel destek uzmanı</p>
+      </div>
+      <div class="role-card" data-role="Mühendis">
+       <h3>🔧 Mühendis</h3>
+       <p>Teknik sistem uzmanı</p>
+      </div>
+     </div><button class="btn" id="start-btn" disabled>Uçuşa Başla 🚀</button>
+    </div>
+    <div id="game-screen" class="hidden">
+     <div class="flight-phase">
+      <div class="phase-indicator" id="phase-name">
+       Kalkış Öncesi
+      </div>
+      <div class="progress-bar">
+       <div class="progress-fill" id="progress-fill" style="width: 0%">
+        0/12
+       </div>
+      </div>
+     </div>
+     <div class="systems-panel">
+      <div class="system-indicator" id="system-1">
+       <div class="icon">
+        ⚙️
+       </div>
+       <div class="label">
+        Motor
+       </div>
+      </div>
+      <div class="system-indicator" id="system-2">
+       <div class="icon">
+        🛡️
+       </div>
+       <div class="label">
+        Güvenlik
+       </div>
+      </div>
+      <div class="system-indicator" id="system-3">
+       <div class="icon">
+        📡
+       </div>
+       <div class="label">
+        İletişim
+       </div>
+      </div>
+      <div class="system-indicator" id="system-4">
+       <div class="icon">
+        🧭
+       </div>
+       <div class="label">
+        Navigasyon
+       </div>
+      </div>
+     </div>
+     <div class="question-card">
+      <h3 id="question-text"></h3>
+      <div class="answers" id="answers"></div>
+     </div>
+    </div>
+    <div id="results-screen" class="results-screen hidden">
+     <h2 id="result-title">Harika İş Çıkardınız!</h2>
+     <p id="success-message">Gökyüzünü sadece pilotlar değil, psikolojik dayanıklılığı yüksek zihinler yönetir!</p>
+     <div class="score-display">
+      <div style="font-size: 24px; opacity: 0.9;">
+       Toplam Puanınız
+      </div>
+      <div class="score" id="final-score">
+       0
+      </div>
+      <div style="font-size: 18px; opacity: 0.9;" id="score-percentage">
+       0% Başarı
+      </div>
+     </div>
+     <div class="leaderboard">
+      <h3>🏆 Lider Tablosu</h3>
+      <div id="leaderboard-list"></div>
+     </div><button class="btn" id="play-again-btn">Tekrar Oyna ✈️</button>
+    </div>
+   </div>
+  </div>
+  <div class="toast" id="toast">
+   <div class="icon" id="toast-icon"></div>
+   <div class="message" id="toast-message"></div>
+  </div>
+  <script>
+    const defaultConfig = {
+      game_title: "✈️ Flight Mind Mission",
+      game_subtitle: "Zihin Uçuşu Görevi",
+      welcome_message: "Flight Mind 2025'e hoş geldiniz! Bugün hem pilot hem psikolog olacaksınız. Uçağımız kalkışa hazır, ancak bazı sistem kontrolleri sizden doğru cevaplar bekliyor. Her doğru yanıt bizi güvenli bir şekilde gökyüzüne taşıyacak!",
+      start_button: "Uçuşa Başla 🚀",
+      success_message: "Gökyüzünü sadece pilotlar değil, psikolojik dayanıklılığı yüksek zihinler yönetir!",
+      background_color: "#1e3c72",
+      card_color: "#ffffff",
+      text_color: "#333333",
+      primary_button_color: "#667eea",
+      accent_color: "#764ba2",
+      font_family: "Segoe UI",
+      font_size: 16
+    };
+
+    const questions = [
+      // Kalkış Öncesi
+      { phase: "Kalkış Öncesi", question: "Kara kutu hangi renktir?", answers: ["Turuncu", "Siyah", "Kırmızı", "Mavi"], correct: 0 },
+      { phase: "Kalkış Öncesi", question: "Uçakta acil durum çıkışları kaç saniyede açılmalıdır?", answers: ["30 saniye", "60 saniye", "90 saniye", "120 saniye"], correct: 2 },
+      { phase: "Kalkış Öncesi", question: "Pilotların uçuş öncesi yaptığı kontrol listesine ne denir?", answers: ["Checklist", "Briefing", "Debriefing", "Protocol"], correct: 0 },
+      
+      // Kalkış & Tırmanış
+      { phase: "Kalkış & Tırmanış", question: "Sempatik sinir sistemi hangi durumda aktif olur?", answers: ["Dinlenme", "Stres", "Uyku", "Yemek"], correct: 1 },
+      { phase: "Kalkış & Tırmanış", question: "Uçuş korkusunun psikolojik adı nedir?", answers: ["Agorafobi", "Avifobi", "Klaustrofobi", "Akrofobi"], correct: 1 },
+      { phase: "Kalkış & Tırmanış", question: "Stres altında karar verme yeteneğini artıran teknik hangisidir?", answers: ["Panik yapmak", "Derin nefes almak", "Hızlı düşünmek", "Görmezden gelmek"], correct: 1 },
+      
+      // Seyir
+      { phase: "Seyir", question: "Kaptan etkisi (Authority Gradient) nedir?", answers: ["Kaptanın her zaman haklı olması", "Hiyerarşinin iletişimi engellemesi", "Kaptanın en yetkili kişi olması", "Ekip çalışmasının önemi"], correct: 1 },
+      { phase: "Seyir", question: "Uzun uçuşlarda pilotların dikkatini dağıtan en büyük faktör nedir?", answers: ["Yorgunluk", "Açlık", "Gürültü", "Soğuk"], correct: 0 },
+      { phase: "Seyir", question: "CRM (Crew Resource Management) neyi ifade eder?", answers: ["Yakıt yönetimi", "Ekip kaynak yönetimi", "Kriz yönetimi", "Risk yönetimi"], correct: 1 },
+      
+      // İniş
+      { phase: "İniş", question: "Pilotların en çok hata yaptığı uçuş evresi hangisidir?", answers: ["Kalkış", "Seyir", "İniş", "Park"], correct: 2 },
+      { phase: "İniş", question: "Karar verme sürecinde 'confirmation bias' ne anlama gelir?", answers: ["Doğru kararlar almak", "Kendi inancını doğrulayan bilgileri seçmek", "Hızlı karar vermek", "Ekip kararı almak"], correct: 1 },
+      { phase: "İniş", question: "Psikolojik dayanıklılığı artıran en önemli faktör nedir?", answers: ["Deneyim", "Eğitim", "Zihinsel hazırlık", "Hepsi"], correct: 3 }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let selectedRole = "";
+    let playerName = "";
+    let leaderboardData = [];
+
+    const dataHandler = {
+      onDataChanged(data) {
+        leaderboardData = data.sort((a, b) => b.score - a.score);
+        if (document.getElementById('results-screen').classList.contains('hidden') === false) {
+          renderLeaderboard();
+        }
+      }
+    };
+
+    async function initializeApp() {
+      const initResult = await window.dataSdk.init(dataHandler);
+      if (!initResult.isOk) {
+        showToast("Veri sistemi başlatılamadı", "error");
+      }
+
+      await window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          const customFont = config.font_family || defaultConfig.font_family;
+          const baseSize = config.font_size || defaultConfig.font_size;
+          const baseFontStack = 'Tahoma, Geneva, Verdana, sans-serif';
+
+          document.getElementById('game-title').textContent = config.game_title || defaultConfig.game_title;
+          document.getElementById('game-title').style.fontFamily = `${customFont}, ${baseFontStack}`;
+          document.getElementById('game-title').style.fontSize = `${baseSize * 3}px`;
+
+          document.getElementById('game-subtitle').textContent = config.game_subtitle || defaultConfig.game_subtitle;
+          document.getElementById('game-subtitle').style.fontFamily = `${customFont}, ${baseFontStack}`;
+          document.getElementById('game-subtitle').style.fontSize = `${baseSize * 1.25}px`;
+
+          document.getElementById('welcome-message').textContent = config.welcome_message || defaultConfig.welcome_message;
+          document.getElementById('welcome-message').style.fontFamily = `${customFont}, ${baseFontStack}`;
+          document.getElementById('welcome-message').style.fontSize = `${baseSize * 1.125}px`;
+
+          document.getElementById('start-btn').textContent = config.start_button || defaultConfig.start_button;
+          document.getElementById('success-message').textContent = config.success_message || defaultConfig.success_message;
+
+          document.body.style.background = `linear-gradient(135deg, ${config.background_color || defaultConfig.background_color} 0%, ${config.primary_button_color || defaultConfig.primary_button_color} 100%)`;
+          
+          document.querySelectorAll('.game-screen').forEach(el => {
+            el.style.background = `rgba(255, 255, 255, 0.95)`;
+          });
+
+          document.querySelectorAll('.btn').forEach(btn => {
+            btn.style.background = `linear-gradient(135deg, ${config.primary_button_color || defaultConfig.primary_button_color} 0%, ${config.accent_color || defaultConfig.accent_color} 100%)`;
+            btn.style.fontFamily = `${customFont}, ${baseFontStack}`;
+            btn.style.fontSize = `${baseSize * 1.125}px`;
+          });
+
+          document.querySelectorAll('.role-card').forEach(card => {
+            card.style.background = `linear-gradient(135deg, ${config.primary_button_color || defaultConfig.primary_button_color} 0%, ${config.accent_color || defaultConfig.accent_color} 100%)`;
+          });
+
+          document.querySelectorAll('h2, h3').forEach(heading => {
+            heading.style.fontFamily = `${customFont}, ${baseFontStack}`;
+          });
+
+          document.querySelectorAll('p, label, .answer-btn').forEach(text => {
+            text.style.fontFamily = `${customFont}, ${baseFontStack}`;
+            text.style.fontSize = `${baseSize}px`;
+          });
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => {
+                config.background_color = value;
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            },
+            {
+              get: () => config.card_color || defaultConfig.card_color,
+              set: (value) => {
+                config.card_color = value;
+                window.elementSdk.setConfig({ card_color: value });
+              }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => {
+                config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => config.primary_button_color || defaultConfig.primary_button_color,
+              set: (value) => {
+                config.primary_button_color = value;
+                window.elementSdk.setConfig({ primary_button_color: value });
+              }
+            },
+            {
+              get: () => config.accent_color || defaultConfig.accent_color,
+              set: (value) => {
+                config.accent_color = value;
+                window.elementSdk.setConfig({ accent_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => {
+              config.font_family = value;
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => {
+              config.font_size = value;
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["game_title", config.game_title || defaultConfig.game_title],
+          ["game_subtitle", config.game_subtitle || defaultConfig.game_subtitle],
+          ["welcome_message", config.welcome_message || defaultConfig.welcome_message],
+          ["start_button", config.start_button || defaultConfig.start_button],
+          ["success_message", config.success_message || defaultConfig.success_message]
+        ])
+      });
+    }
+
+    document.querySelectorAll('.role-card').forEach(card => {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedRole = this.dataset.role;
+        checkStartButton();
+      });
+    });
+
+    document.getElementById('player-name').addEventListener('input', checkStartButton);
+
+    function checkStartButton() {
+      const name = document.getElementById('player-name').value.trim();
+      const btn = document.getElementById('start-btn');
+      btn.disabled = !(name && selectedRole);
+    }
+
+    document.getElementById('start-btn').addEventListener('click', startGame);
+
+    function startGame() {
+      playerName = document.getElementById('player-name').value.trim();
+      document.getElementById('welcome-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      if (currentQuestion >= questions.length) {
+        endGame();
+        return;
+      }
+
+      const q = questions[currentQuestion];
+      document.getElementById('phase-name').textContent = q.phase;
+      document.getElementById('question-text').textContent = q.question;
+      
+      const answersDiv = document.getElementById('answers');
+      answersDiv.innerHTML = '';
+      
+      q.answers.forEach((answer, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = answer;
+        btn.addEventListener('click', () => checkAnswer(index, btn));
+        answersDiv.appendChild(btn);
+      });
+
+      updateProgress();
+    }
+
+    function checkAnswer(selected, btn) {
+      const q = questions[currentQuestion];
+      const allBtns = document.querySelectorAll('.answer-btn');
+      
+      allBtns.forEach(b => b.disabled = true);
+
+      if (selected === q.correct) {
+        btn.classList.add('correct');
+        score += 10;
+        updateSystem(currentQuestion % 4, true);
+        showToast("Doğru! Sistem aktif ✅", "success");
+      } else {
+        btn.classList.add('incorrect');
+        allBtns[q.correct].classList.add('correct');
+        updateSystem(currentQuestion % 4, false);
+        showToast("Yanlış! Sistem uyarısı ⚠️", "error");
+      }
+
+      setTimeout(() => {
+        currentQuestion++;
+        loadQuestion();
+      }, 2000);
+    }
+
+    function updateSystem(systemIndex, isCorrect) {
+      const system = document.getElementById(`system-${systemIndex + 1}`);
+      if (isCorrect) {
+        system.classList.add('active');
+        system.classList.remove('warning');
+      } else {
+        system.classList.add('warning');
+      }
+    }
+
+    function updateProgress() {
+      const progress = ((currentQuestion) / questions.length) * 100;
+      const fill = document.getElementById('progress-fill');
+      fill.style.width = `${progress}%`;
+      fill.textContent = `${currentQuestion}/${questions.length}`;
+    }
+
+    async function endGame() {
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('results-screen').classList.remove('hidden');
+      
+      const percentage = Math.round((score / (questions.length * 10)) * 100);
+      document.getElementById('final-score').textContent = score;
+      document.getElementById('score-percentage').textContent = `${percentage}% Başarı`;
+
+      if (percentage >= 80) {
+        document.getElementById('result-title').textContent = "🎉 Mükemmel İniş!";
+      } else if (percentage >= 60) {
+        document.getElementById('result-title').textContent = "✈️ Güvenli İniş!";
+      } else {
+        document.getElementById('result-title').textContent = "⚠️ Zorlu İniş!";
+      }
+
+      if (leaderboardData.length >= 999) {
+        showToast("Lider tablosu dolu! Yeni kayıt eklenemiyor.", "error");
+      } else {
+        const saveResult = await window.dataSdk.create({
+          player_name: playerName,
+          role: selectedRole,
+          score: score,
+          completed_at: new Date().toISOString()
+        });
+
+        if (!saveResult.isOk) {
+          showToast("Skor kaydedilemedi", "error");
+        }
+      }
+    }
+
+    function renderLeaderboard() {
+      const list = document.getElementById('leaderboard-list');
+      list.innerHTML = '';
+
+      const topPlayers = leaderboardData.slice(0, 10);
+      
+      if (topPlayers.length === 0) {
+        list.innerHTML = '<p style="text-align: center; color: #666;">Henüz kayıt yok</p>';
+        return;
+      }
+
+      topPlayers.forEach((player, index) => {
+        const item = document.createElement('div');
+        item.className = 'leaderboard-item';
+        item.innerHTML = `
+          <div class="rank">${index + 1}</div>
+          <div class="info">
+            <div class="name">${player.player_name}</div>
+            <div class="role">${player.role}</div>
+          </div>
+          <div class="score">${player.score}</div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    document.getElementById('play-again-btn').addEventListener('click', () => {
+      currentQuestion = 0;
+      score = 0;
+      selectedRole = "";
+      playerName = "";
+      
+      document.querySelectorAll('.system-indicator').forEach(sys => {
+        sys.classList.remove('active', 'warning');
+      });
+      
+      document.getElementById('player-name').value = '';
+      document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+      
+      document.getElementById('results-screen').classList.add('hidden');
+      document.getElementById('welcome-screen').classList.remove('hidden');
+      
+      checkStartButton();
+    });
+
+    function showToast(message, type) {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      const msg = document.getElementById('toast-message');
+      
+      toast.className = `toast ${type}`;
+      icon.textContent = type === 'success' ? '✅' : '⚠️';
+      msg.textContent = message;
+      
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    initializeApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99af659d56a458fd',t:'MTc2MjU0NTQxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
